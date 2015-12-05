@@ -4,24 +4,20 @@ import nl.brusque.pinky.IPromise;
 import nl.brusque.pinky.IRunnable;
 
 public abstract class Promise implements IPromise, IRunnable {
-    private final boolean _runInBackground;
     private PromiseStateHandler _promiseState = new PromiseStateHandler();
     private IPromise _then;
 
-    public Promise() {
-        this(true);
-    }
+    public void resolve(final Object o) {
+        new Thread() {
+            @Override
+            public void run() {
+                _promiseState.resolve(o);
 
-    public Promise(boolean runInBackground) {
-        _runInBackground = runInBackground;
-    }
-
-    public void resolve(Object o) {
-        _promiseState.resolve(o);
-
-        if (_then!=null) {
-            _then.run(o);
-        }
+                if(_then!=null) {
+                    _then.run(o);
+                }
+            }
+        }.run();
     }
 
     public IPromise then(IPromise r) {
