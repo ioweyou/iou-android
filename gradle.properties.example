@@ -1,0 +1,26 @@
+POM_NAME=IOU Android
+POM_ARTIFACT_ID=iou-android
+POM_PACKAGING=aar
+VERSION_NAME=1.0.0-beta-01
+VERSION_CODE=1
+GROUP=nl.brusque.iou
+
+POM_DESCRIPTION=IOU Promises; Android library
+POM_URL=https://github.com/ioweyou
+POM_SCM_URL=git@github.com:ioweyou/iou-android.git
+POM_SCM_CONNECTION=scm:git:git@github.com:ioweyou/iou-android.git
+POM_SCM_DEV_CONNECTION=scm:git:git@github.com:ioweyou/iou-android.git
+POM_LICENCE_NAME=MIT License
+POM_LICENCE_URL=http://www.opensource.org/licenses/mit-license.php
+POM_LICENCE_DIST=repo
+POM_DEVELOPER_ID=edeckers
+POM_DEVELOPER_NAME=Ely Deckers
+
+NEXUS_USERNAME=your_nexus_username
+NEXUS_PASSWORD=your_nexus_password
+
+SNAPSHOT_REPOSITORY_URL=https://oss.sonatype.org/content/repositories/snapshots
+RELEASE_REPOSITORY_URL=https://oss.sonatype.org/service/local/staging/deploy/maven2
+
+signing.keyId=your_gpg_key_id
+signing.secretKeyRingFile=/path/to/secring.gpg
