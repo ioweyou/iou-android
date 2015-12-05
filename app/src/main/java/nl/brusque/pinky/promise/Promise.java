@@ -20,11 +20,28 @@ public abstract class Promise implements IPromise, IRunnable {
         }.run();
     }
 
+    public void reject(final String reason) {
+        new Thread() {
+            @Override
+            public void run() {
+                _promiseState.reject(reason);
+            }
+        }.run();
+    }
+
     public IPromise then(IPromise r) {
         _then = r;
 
         if (_promiseState.isResolved()) {
             _then.resolve(_then.run(_promiseState.getResolvedWith()));
+        }
+
+        return _then;
+    }
+
+    public IPromise fail(IPromise r) {
+        if (_promiseState.isRejected()) {
+            //_then.resolve(_then.run(_promiseState.getResolvedWith()));
         }
 
         return _then;

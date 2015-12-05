@@ -4,7 +4,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
-import nl.brusque.pinky.promise.Pipe;
+import nl.brusque.pinky.promise.Promise;
 
 public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
@@ -15,7 +15,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         IPromise testPromise = Pinky.resolve(1);
 
         testPromise
-            .then(new Pipe() {
+            .then(new Promise() {
                 @Override
                 public Object run(Object o) {
                     Log.d("PIPE", o.toString());
@@ -23,7 +23,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
                     return "MY PIPE";
                 }
             })
-            .then(new Pipe() {
+            .then(new Promise() {
                 @Override
                 public Object run(Object o) {
                     Log.d("HALLO", o.toString());
