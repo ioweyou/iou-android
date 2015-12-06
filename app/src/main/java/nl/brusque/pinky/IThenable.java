@@ -1,5 +1,6 @@
 package nl.brusque.pinky;
 
 public interface IThenable {
-    IPromise then(IPromise r);
+    IPromise then(Object onFulfilled);
+    IPromise then(Object onFulfilled, Object onRejected);
 }

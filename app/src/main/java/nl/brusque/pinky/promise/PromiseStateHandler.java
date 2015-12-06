@@ -1,32 +1,37 @@
 package nl.brusque.pinky.promise;
 
 public class PromiseStateHandler {
-    private boolean _isResolved = false;
-    private boolean _isPending  = true;
-    private boolean _isRejected = false;
+    private State _state = State.PENDING;
+
     private String _rejectionReason;
     private Object _resolvedWith;
 
+    private enum State {
+        RESOLVED,
+        PENDING,
+        REJECTED
+    }
+
     public boolean isPending() {
-        return _isPending;
+        return _state == State.PENDING;
     }
 
     public boolean isResolved() {
-        return _isResolved;
+        return _state == State.RESOLVED;
     }
 
     public boolean isRejected() {
-        return _isRejected;
+        return _state == State.REJECTED;
     }
 
     public void resolve(Object o) {
-        _isResolved = true;
+        _state = State.RESOLVED;
 
         _resolvedWith = o;
     }
 
     public void reject(String reason) {
-        _isRejected = true;
+        _state = State.REJECTED;
 
         _rejectionReason = reason;
     }

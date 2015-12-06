@@ -3,16 +3,21 @@ package nl.brusque.pinky;
 import nl.brusque.pinky.promise.Promise;
 
 public class Pinky {
-    public static IPromise resolve(final Object o) {
-        Promise p = new Promise() {
-            @Override
-            public Object run(Object v) {
-                return v;
-            }
-        };
+    private final Promise _promise;
 
-        p.resolve(o);
+    public Pinky() {
+        _promise = new Promise();
+    }
 
-        return p;
+    public IPromise getPromise() {
+        return _promise;
+    }
+
+    public IPromise resolve(Object o) {
+        return _promise.resolve(o);
+    }
+
+    public IPromise reject(Object o) {
+        return _promise.reject(o.toString());
     }
 }

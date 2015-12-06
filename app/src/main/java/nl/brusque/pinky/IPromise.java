@@ -1,6 +1,6 @@
 package nl.brusque.pinky;
 
-public interface IPromise extends IThenable, IRunnable {
-
-    void resolve(Object run);
+public interface IPromise extends IThenable {
+    IPromise resolve(Object run);
+    IPromise reject(Object o);
 }
