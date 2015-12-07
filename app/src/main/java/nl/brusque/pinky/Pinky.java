@@ -9,7 +9,7 @@ public class Pinky {
         _promise = new Promise();
     }
 
-    public IPromise getPromise() {
+    public Promise getPromise() {
         return _promise;
     }
 

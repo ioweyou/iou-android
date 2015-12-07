@@ -1,6 +1,6 @@
 package nl.brusque.pinky.helper;
 
-import nl.brusque.pinky.promise.IRejectable;
+import nl.brusque.pinky.android.IRejectable;
 
 public class RejectableSpy extends Spy implements IRejectable {
     @Override

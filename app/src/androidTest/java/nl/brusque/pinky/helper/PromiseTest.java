@@ -5,10 +5,8 @@ import android.test.ApplicationTestCase;
 import android.util.Log;
 
 import nl.brusque.pinky.IPromise;
+import nl.brusque.pinky.IThenable;
 import nl.brusque.pinky.Pinky;
-import nl.brusque.pinky.promise.Fulfillable;
-import nl.brusque.pinky.promise.IFulfillable;
-import nl.brusque.pinky.promise.IRejectable;
 
 public class PromiseTest extends ApplicationTestCase<Application> {
     public PromiseTest() {
@@ -27,11 +25,11 @@ public class PromiseTest extends ApplicationTestCase<Application> {
         return deferred().getPromise().resolve(o);
     }
 
-    public IPromise rejected() {
+    public IThenable rejected() {
         return rejected("");
     }
 
-    public IPromise rejected(Object o) {
+    public IThenable rejected(Object o) {
         return deferred().getPromise().reject(o);
     }
 

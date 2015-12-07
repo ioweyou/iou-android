@@ -2,22 +2,33 @@ package nl.brusque.pinky;
 
 import android.util.Log;
 
+import nl.brusque.pinky.android.AndroidFulfillable;
 import nl.brusque.pinky.android.AndroidPinky;
+import nl.brusque.pinky.android.AndroidPromise;
 import nl.brusque.pinky.helper.PromiseTest;
-import nl.brusque.pinky.promise.Fulfillable;
 
 public class MyAndroidTests extends PromiseTest {
     public void testMine() {
         AndroidPinky d = new AndroidPinky(getContext());
 
-        d.getPromise().then(new Fulfillable() {
+        d.getPromise().then(new AndroidFulfillable() {
+            @Override
+            public AndroidPromise.AndroidExecutionScope getExecutionScope() {
+                return AndroidPromise.AndroidExecutionScope.BACKGROUND;
+            }
+
             @Override
             public Object fulfill(Object o) throws Exception {
                 Log.i("ONE", "ABCDE");
 
                 return "ABCDE";
             }
-        }).then(new Fulfillable() {
+        }).then(new AndroidFulfillable() {
+            @Override
+            public AndroidPromise.AndroidExecutionScope getExecutionScope() {
+                return AndroidPromise.AndroidExecutionScope.UI;
+            }
+
             @Override
             public Object fulfill(Object o) throws Exception {
                 Log.i("TWO", "FGHIJ");

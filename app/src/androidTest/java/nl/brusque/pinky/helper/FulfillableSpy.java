@@ -1,6 +1,6 @@
 package nl.brusque.pinky.helper;
 
-import nl.brusque.pinky.promise.IFulfillable;
+import nl.brusque.pinky.IFulfillable;
 
 public class FulfillableSpy extends Spy implements IFulfillable {
     @Override

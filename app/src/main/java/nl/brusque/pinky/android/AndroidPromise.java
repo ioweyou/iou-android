@@ -2,78 +2,87 @@ package nl.brusque.pinky.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 
-import nl.brusque.pinky.IPromise;
-import nl.brusque.pinky.promise.Promise;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AndroidPromise implements IPromise {
-    private final AndroidExecutionScope _scope;
+import nl.brusque.pinky.AbstractPromise;
+import nl.brusque.pinky.IFulfillable;
+
+public class AndroidPromise extends AbstractPromise<AndroidPromise> {
+
+    public enum AndroidExecutionScope {
+        BACKGROUND,
+        UI
+    }
+
     private final Context _context;
-    private final IPromise _promise;
-    private AndroidPromise _nextPromise;
 
-    enum AndroidExecutionScope {
-        UI,
-        BACKGROUND
-    }
-
-    public AndroidPromise(Context context, AndroidExecutionScope scope) {
-        _scope   = scope;
-
+    public AndroidPromise(Context context) {
         _context = context;
-
-        _promise = new Promise();
     }
 
     @Override
-    public AndroidPromise resolve(final Object run) {
-        if (_scope == AndroidExecutionScope.UI) {
-            ((Activity)_context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    _promise.resolve(run);
-                }
-            });
+    public boolean isFulfillable(Object onFulfilled) {
+        return onFulfilled != null && onFulfilled instanceof AndroidFulfillable;
+    }
+
+    @Override
+    public boolean isRejectable(Object onRejected) {
+        return onRejected != null && onRejected instanceof AndroidRejectable;
+    }
+
+    @Override
+    public Object runFulfill(final IFulfillable fulfillable, final Object o) throws Exception {
+        if (!isFulfillable(fulfillable)) {
+            return null;
         }
 
-        return this;
-    }
+        final AndroidFulfillable androidFulfillable = (AndroidFulfillable)fulfillable;
+        if (androidFulfillable.getExecutionScope().equals(AndroidExecutionScope.UI)) {
+            final List<Exception> exceptions = new ArrayList<>();
+            final List<Object> results = new ArrayList<>();
+            new AsyncTask<Object, Void, Object>() {
 
-    @Override
-    public AndroidPromise reject(final Object o) {
-        if (_scope == AndroidExecutionScope.UI) {
-            ((Activity)_context).runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
-                    _promise.reject(o);
+                protected Object doInBackground(Object... params) {
+                    return null;
                 }
-            });
+
+                @Override
+                protected void onPostExecute(Object result) {
+                    try {
+                        results.add(fulfillable.fulfill(o));
+                    } catch (Exception e) {
+                        exceptions.add(e);
+                    }
+
+                    results.add(result);
+                }
+            }.get();
+
+            if (exceptions.size() > 0) {
+                throw exceptions.get(0);
+            }
+
+            return results.get(0);
         }
 
-        return this;
+        return fulfillable.fulfill(o);
     }
 
     @Override
-    public AndroidPromise then() {
-        _promise.then();
+    public Object runReject(IRejectable rejectable, Object o) throws Exception {
+        if (!isRejectable(rejectable)) {
+            return null;
+        }
 
-        //_nextPromise = new AndroidPromise();
-
-        //return new AndroidPromise();
-        return null;
+        return rejectable.reject(o);
     }
 
     @Override
-    public AndroidPromise then(Object onFulfilled)
-    {
-        return null;
-        //return _promise.then(onFulfilled);
+    public AndroidPromise create() {
+        return new AndroidPromise(_context);
     }
-
-    @Override
-    public IPromise then(Object onFulfilled, Object onRejected) {
-        return _promise.then(onFulfilled, onRejected);
-    }
-
-
 }

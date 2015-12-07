@@ -1,4 +1,4 @@
-package nl.brusque.pinky.promise;
+package nl.brusque.pinky;
 
 public class PromiseStateHandler {
     private State _state = State.PENDING;

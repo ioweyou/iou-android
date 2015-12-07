@@ -88,7 +88,7 @@ public class Test224 extends PromiseTest {
                         specify("when `onFulfilled` is added inside an `onRejected`", new Runnable() {
                             @Override
                             public void run() {
-                                final IPromise promise = rejected();
+                                final IThenable promise = rejected();
                                 final IPromise promise2 = resolved();
                                 final boolean[] firstOnFulfilledFinished = {false};
 
@@ -186,7 +186,7 @@ public class Test224 extends PromiseTest {
                         specify("when one `onRejected` is added inside another `onRejected`", new Runnable() {
                             @Override
                             public void run() {
-                                final IPromise promise = rejected();
+                                final IThenable promise = rejected();
                                 final boolean[] firstOnRejectedFinished = {false};
 
                                 promise.then(null, new Rejectable() {
@@ -214,7 +214,7 @@ public class Test224 extends PromiseTest {
                             @Override
                             public void run() {
                                 final IPromise promise = resolved();
-                                final IPromise promise2 = rejected();
+                                final IThenable promise2 = rejected();
                                 final boolean[] firstOnFulfilledFinished = {false};
 
                                 promise.then(new Fulfillable() {

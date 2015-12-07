@@ -7,10 +7,8 @@ import junit.framework.Assert;
 import nl.brusque.pinky.helper.FulfillableSpy;
 import nl.brusque.pinky.helper.ISpy;
 import nl.brusque.pinky.helper.PromiseTest;
-import nl.brusque.pinky.helper.RejectableSpy;
 import nl.brusque.pinky.helper.Testable;
 import nl.brusque.pinky.promise.Fulfillable;
-import nl.brusque.pinky.promise.Promise;
 
 public class Test226 extends PromiseTest {
     public void test226ThenMayBeCalledMultipleTimesOnTheSamePromise() {

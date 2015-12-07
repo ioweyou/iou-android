@@ -4,7 +4,6 @@ import junit.framework.Assert;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 
 import nl.brusque.pinky.helper.PromiseTest;
 import nl.brusque.pinky.helper.Testable;
@@ -73,7 +72,7 @@ public class Test227 extends PromiseTest {
 
                                     @Override
                                     public void run() {
-                                        IPromise promise2 = promise1.then(new Fulfillable() {
+                                        IThenable promise2 = promise1.then(new Fulfillable() {
                                             @Override
                                             public Object fulfill(Object o) throws Exception {
                                                 throw new Exception(String.valueOf(expectedReason));
