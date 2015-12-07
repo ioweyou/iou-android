@@ -39,7 +39,7 @@ public class AndroidPromise extends AbstractPromise<AndroidPromise> {
             return null;
         }
 
-        final AndroidFulfillable androidFulfillable = (AndroidFulfillable)fulfillable;
+        /*final AndroidFulfillable androidFulfillable = (AndroidFulfillable)fulfillable;
         if (androidFulfillable.getExecutionScope().equals(AndroidExecutionScope.UI)) {
             final List<Exception> exceptions = new ArrayList<>();
             final List<Object> results = new ArrayList<>();
@@ -67,7 +67,7 @@ public class AndroidPromise extends AbstractPromise<AndroidPromise> {
             }
 
             return results.get(0);
-        }
+        }*/
 
         return fulfillable.fulfill(o);
     }

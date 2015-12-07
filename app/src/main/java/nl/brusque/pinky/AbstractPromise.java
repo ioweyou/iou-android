@@ -1,12 +1,11 @@
 package nl.brusque.pinky;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import nl.brusque.pinky.android.IRejectable;
 
@@ -29,17 +28,10 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     private void nextResolve() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        //new Handler(Looper.getMainLooper()).post(new Runnable() {
+        final CountDownLatch latch = new CountDownLatch(1);
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1); // FIXME Ugh, this doesn't even really always work.
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 for (IFulfillable fulfilled : _onFulfilleds) {
                     try {
                         Object result = runFulfill(fulfilled, _promiseState.getResolvedWith());
@@ -50,10 +42,17 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                         _nextPromise.reject(e);
                     }
                 }
+
+                latch.countDown();
             }
         });
 
         executor.shutdown();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public AbstractPromise<TResult> reject(final Object o) {
@@ -69,16 +68,10 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     private void nextReject() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        //new Handler(Looper.getMainLooper()).post(new Runnable() {
+        final CountDownLatch latch = new CountDownLatch(1);
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1); // FIXME Ugh, this doesn't even really always work.
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 for (IRejectable onRejected : _onRejecteds) {
                     try {
                         Object result = runReject(onRejected, _promiseState.RejectedWith());
@@ -89,10 +82,17 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                         _nextPromise.reject(e);
                     }
                 }
+
+                latch.countDown();
             }
         });
 
         executor.shutdown();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

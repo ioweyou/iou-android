@@ -19,7 +19,7 @@ public class MyAndroidTests extends PromiseTest {
 
             @Override
             public Object fulfill(Object o) throws Exception {
-                Log.i("ONE", "ABCDE");
+                Log.e("ONE", "ABCDE");
 
                 return "ABCDE";
             }
@@ -31,7 +31,7 @@ public class MyAndroidTests extends PromiseTest {
 
             @Override
             public Object fulfill(Object o) throws Exception {
-                Log.i("TWO", "FGHIJ");
+                Log.e("TWO", "FGHIJ");
 
                 return "FGHIJ";
             }
