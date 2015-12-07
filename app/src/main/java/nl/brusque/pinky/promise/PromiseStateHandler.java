@@ -3,8 +3,12 @@ package nl.brusque.pinky.promise;
 public class PromiseStateHandler {
     private State _state = State.PENDING;
 
-    private String _rejectionReason;
+    private Object _rejectionReason;
     private Object _resolvedWith;
+
+    public Object RejectedWith() {
+        return _rejectionReason;
+    }
 
     private enum State {
         RESOLVED,
@@ -30,7 +34,7 @@ public class PromiseStateHandler {
         _resolvedWith = o;
     }
 
-    public void reject(String reason) {
+    public void reject(Object reason) {
         _state = State.REJECTED;
 
         _rejectionReason = reason;

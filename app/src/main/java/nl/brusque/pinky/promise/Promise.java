@@ -3,6 +3,8 @@ package nl.brusque.pinky.promise;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -20,30 +22,34 @@ public class Promise implements IPromise {
         }
 
         _promiseState.resolve(o);
-        final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-        try {
-            executor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    for (IFulfillable fulfilled : _onFulfilleds) {
-                        try {
-                            Object result = fulfilled.fulfill(o);
-                            if (result!=null) { // FIXME Generics / Void
-                                _nextPromise.resolve(result);
-                            }
-                        } catch (Exception e) {
-                            _nextPromise.reject(e);
-                        }
-                    }
-                }
-            }, 10, TimeUnit.MILLISECONDS).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        nextResolve();
 
         return this;
+    }
+
+    private void nextResolve() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                for (IFulfillable fulfilled : _onFulfilleds) {
+                    try {
+                        Object result = fulfilled.fulfill(_promiseState.getResolvedWith());
+                        if (result!=null) { // FIXME Generics / Void
+                            _nextPromise.resolve(result);
+                        }
+                    } catch (Exception e) {
+                        _nextPromise.reject(e);
+                    }
+                }
+            }
+        });
     }
 
     public IPromise reject(final Object o) {
@@ -52,30 +58,34 @@ public class Promise implements IPromise {
         }
 
         _promiseState.reject(o.toString());
-        final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-        try {
-            executor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    for (IRejectable onRejected : _onRejecteds) {
-                        try {
-                            Object result = onRejected.reject(o);
-                            if (result!=null) { // FIXME Generics / Void
-                                _nextPromise.reject(result);
-                            }
-                        } catch (Exception e) {
-                            _nextPromise.reject(e);
-                        }
-                    }
-                }
-            }, 10, TimeUnit.MILLISECONDS).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        nextReject();
 
         return this;
+    }
+
+    private void nextReject() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                for (IRejectable onRejected : _onRejecteds) {
+                    try {
+                        Object result = onRejected.reject(_promiseState.RejectedWith());
+                        if (result!=null) { // FIXME Generics / Void
+                            _nextPromise.reject(result);
+                        }
+                    } catch (Exception e) {
+                        _nextPromise.reject(e);
+                    }
+                }
+            }
+        });
     }
 
     public IPromise then(Object onFulfilled) {
@@ -95,6 +105,12 @@ public class Promise implements IPromise {
 
         if (!isFulfilledSupplied && !isRejectedSupplied) {
             throw new Error("Either fulfilled or rejected required.");
+        }
+
+        if (_promiseState.isRejected()) {
+            nextReject();
+        } else if (_promiseState.isResolved()) {
+            nextResolve();
         }
 
         _nextPromise  = new Promise();
