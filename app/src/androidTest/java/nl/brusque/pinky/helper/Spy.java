@@ -1,10 +1,13 @@
 package nl.brusque.pinky.helper;
 
+import android.util.Log;
+
 public class Spy implements ISpy {
     private Object _result;
     private boolean _throwsError;
     private final int[] _callCount = {0};
     private final Object[] _calledWith = {null};
+    private long _lastCall = 0;
 
     public void increaseCallCount() {
         _callCount[0]++;
@@ -23,9 +26,16 @@ public class Spy implements ISpy {
         return _calledWith[0];
     }
 
+    public long lastCall() {
+        return _lastCall;
+    }
+
     public Object call(Object o) throws Exception {
+        Thread.sleep(1);
+        Log.w("CALL", o!=null ? String.valueOf(o) : "NULL");
         increaseCallCount();
         updateCalledWith(o);
+        _lastCall = System.currentTimeMillis();
 
         if (_throwsError) {
             throw new Exception();

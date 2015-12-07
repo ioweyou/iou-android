@@ -6,4 +6,5 @@ public interface ISpy {
     Object call(Object o) throws Exception;
     ISpy returns(Object o);
     ISpy throwsError();
+    long lastCall();
 }

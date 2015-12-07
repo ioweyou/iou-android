@@ -94,7 +94,6 @@ public class Test226 extends PromiseTest {
                             }
                         });
 
-
                         describe("results in multiple branching chains with their own fulfillment values", new Runnable() {
                             @Override
                             public void run() {
@@ -110,13 +109,13 @@ public class Test226 extends PromiseTest {
                                                     return sentinel;
                                                 }
                                             }).then(new Fulfillable() {
-                                                @Override
-                                                public Object fulfill(Object o) {
-                                                    Assert.assertEquals("Object should equal sentinel", sentinel, o);
+                                            @Override
+                                            public Object fulfill(Object o) {
+                                                Assert.assertEquals("Object should equal sentinel", sentinel, o);
 
-                                                    return null;
-                                                }
-                                            });
+                                                return null;
+                                            }
+                                        });
 
                                         promise
                                             .then(new Fulfillable() {
@@ -152,6 +151,79 @@ public class Test226 extends PromiseTest {
 
                                     }
                                 });
+                            }
+                        });
+
+                        describe("`onFulfilled` handlers are called in the original order", new Runnable() {
+                            @Override
+                            public void run() {
+                            testFulfilled(dummy, new Testable() {
+                                @Override
+                                public void run() {
+                                    final ISpy handler1 = new FulfillableSpy().returns(dummy);
+                                    final ISpy handler2 = new FulfillableSpy().returns(dummy);
+                                    final ISpy handler3 = new FulfillableSpy().returns(dummy);
+
+                                    IPromise promise = getPromise();
+                                    promise.then(handler1);
+                                    promise.then(handler2);
+                                    promise.then(handler3);
+
+                                    promise.then(new Fulfillable() {
+                                        @Override
+                                        public Object fulfill(Object o) throws Exception {
+                                            boolean a = handler1.lastCall() < handler2.lastCall();
+                                            boolean b = handler2.lastCall() < handler3.lastCall();
+                                            boolean c = a && b;
+
+                                            Assert.assertTrue("Handlers called in incorrect order", c);
+
+                                            return null;
+                                        }
+                                    });
+                                }
+                            });
+
+                            describe("even when one handler is added inside another handler", new Runnable() { // FIXME This is not working
+                                @Override
+                                public void run() {
+                                    testFulfilled(dummy, new Testable() {
+                                        @Override
+                                        public void run() {
+                                            final ISpy handler1 = new FulfillableSpy().returns(dummy);
+                                            final ISpy handler2 = new FulfillableSpy().returns(dummy);
+                                            final ISpy handler3 = new FulfillableSpy().returns(dummy);
+
+                                            final IPromise promise = getPromise();
+                                            promise.then(new Fulfillable() {
+                                                @Override
+                                                public Object fulfill(Object o) throws Exception {
+                                                    handler1.call(o);
+
+                                                    promise.then(handler3);
+
+                                                    return dummy;
+                                                }
+                                            });
+                                            promise.then(handler2);
+
+                                            promise.then(new Fulfillable() {
+                                                @Override
+                                                public Object fulfill(Object o) throws Exception {
+                                                    Log.e("JA", "HIER");
+                                                    boolean a = handler1.lastCall() < handler2.lastCall();
+                                                    boolean b = handler2.lastCall() < handler3.lastCall();
+                                                    boolean c = a && b;
+
+                                                    Assert.assertTrue("Handlers called in incorrect order", c);
+
+                                                    return null;
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
                             }
                         });
                     }

@@ -33,7 +33,7 @@ public class Promise implements IPromise {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(1); // Needed?
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -69,7 +69,7 @@ public class Promise implements IPromise {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(1); // Needed?
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -88,6 +88,11 @@ public class Promise implements IPromise {
         });
     }
 
+    @Override
+    public IPromise then() {
+        return then(null, null);
+    }
+
     public IPromise then(Object onFulfilled) {
         return then(onFulfilled, null);
     }
@@ -101,10 +106,6 @@ public class Promise implements IPromise {
 
         if (isRejectedSupplied) {
             _onRejecteds.add((IRejectable)onRejected);
-        }
-
-        if (!isFulfilledSupplied && !isRejectedSupplied) {
-            throw new Error("Either fulfilled or rejected required.");
         }
 
         if (_promiseState.isRejected()) {
