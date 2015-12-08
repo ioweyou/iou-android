@@ -174,6 +174,7 @@ public class Test226 extends PromiseTest {
                                             boolean b = handler2.lastCall() < handler3.lastCall();
                                             boolean c = a && b;
 
+                                            Log.e("JAMAARWEL", String.valueOf(c));
                                             Assert.assertTrue("Handlers called in incorrect order", c);
 
                                             return null;
@@ -229,6 +230,7 @@ public class Test226 extends PromiseTest {
             }
         });
 
+        delay(3000);
 
     }
 }

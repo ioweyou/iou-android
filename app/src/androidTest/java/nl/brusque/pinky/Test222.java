@@ -213,5 +213,7 @@ public class Test222 extends PromiseTest {
                 });
             }
         });
+
+        delay(3000);
     }
 }
