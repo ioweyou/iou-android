@@ -11,6 +11,8 @@ public class MyAndroidTests extends PromiseTest {
     public void testMine() {
         AndroidPinky d = new AndroidPinky(getContext());
 
+
+
         d.getPromise().then(new AndroidFulfillable() {
             @Override
             public AndroidPromise.AndroidExecutionScope getExecutionScope() {
@@ -38,5 +40,7 @@ public class MyAndroidTests extends PromiseTest {
         });
 
         d.resolve("JUSTME");
+
+        delay(3000);
     }
 }

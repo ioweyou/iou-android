@@ -28,7 +28,6 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     private void nextResolve() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        final CountDownLatch latch = new CountDownLatch(1);
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -42,17 +41,10 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                         _nextPromise.reject(e);
                     }
                 }
-
-                latch.countDown();
             }
         });
 
         executor.shutdown();
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public AbstractPromise<TResult> reject(final Object o) {
@@ -68,7 +60,6 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     private void nextReject() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        final CountDownLatch latch = new CountDownLatch(1);
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -82,17 +73,10 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                         _nextPromise.reject(e);
                     }
                 }
-
-                latch.countDown();
             }
         });
 
         executor.shutdown();
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
