@@ -11,6 +11,7 @@ import nl.brusque.pinky.helper.ISpy;
 import nl.brusque.pinky.helper.PromiseTest;
 import nl.brusque.pinky.helper.Testable;
 import nl.brusque.pinky.promise.Fulfillable;
+import nl.brusque.pinky.promise.Rejectable;
 
 public class Test226 extends PromiseTest {
     public void test226ThenMayBeCalledMultipleTimesOnTheSamePromise() {
@@ -124,10 +125,11 @@ public class Test226 extends PromiseTest {
                                                     throw new Exception(sentinel2);
                                                 }
                                             })
-                                            .then(new Fulfillable() {
+                                            .then(null, new Rejectable() {
                                                 @Override
-                                                public Object fulfill(Object o) {
-                                                    Assert.assertEquals("Object should equal sentinel2", sentinel2, o);
+                                                public Object reject(Object o) throws Exception {
+                                                    Exception e = (Exception)o; // :')
+                                                    Assert.assertEquals("Object should equal sentinel2", sentinel2, e.getMessage());
 
                                                     return null;
                                                 }
@@ -189,46 +191,46 @@ public class Test226 extends PromiseTest {
                                     }
                                 });
 
-//                            describe("even when one handler is added inside another handler", new Runnable() { // FIXME This is not working
-//                                @Override
-//                                public void run() {
-//                                    testFulfilled(dummy, new Testable() {
-//                                        @Override
-//                                        public void run() {
-//                                            final ISpy handler1 = new FulfillableSpy().returns(dummy);
-//                                            final ISpy handler2 = new FulfillableSpy().returns(dummy);
-//                                            final ISpy handler3 = new FulfillableSpy().returns(dummy);
-//
-//                                            final IPromise promise = getPromise();
-//                                            promise.then(new Fulfillable() {
-//                                                @Override
-//                                                public Object fulfill(Object o) throws Exception {
-//                                                    handler1.call(o);
-//
-//                                                    promise.then(handler3);
-//
-//                                                    return dummy;
-//                                                }
-//                                            });
-//                                            promise.then(handler2);
-//
-//                                            promise.then(new Fulfillable() {
-//                                                @Override
-//                                                public Object fulfill(Object o) throws Exception {
-//                                                    //Log.e("JA", "HIER");
-//                                                    boolean a = handler1.lastCall() < handler2.lastCall();
-//                                                    boolean b = handler2.lastCall() < handler3.lastCall();
-//                                                    boolean c = a && b;
-//
-//                                                    Assert.assertTrue("Handlers called in incorrect order", c);
-//
-//                                                    return null;
-//                                                }
-//                                            });
-//                                        }
-//                                    });
-//                                }
-//                            });
+                            describe("even when one handler is added inside another handler", new Runnable() { // FIXME This is not working
+                                @Override
+                                public void run() {
+                                    testFulfilled(dummy, new Testable() {
+                                        @Override
+                                        public void run() {
+                                            final ISpy handler1 = new FulfillableSpy().returns(dummy);
+                                            final ISpy handler2 = new FulfillableSpy().returns(dummy);
+                                            final ISpy handler3 = new FulfillableSpy().returns(dummy);
+
+                                            final IPromise promise = getPromise();
+                                            promise.then(new Fulfillable() {
+                                                @Override
+                                                public Object fulfill(Object o) throws Exception {
+                                                    handler1.call(o);
+
+                                                    promise.then(handler3);
+
+                                                    return dummy;
+                                                }
+                                            });
+                                            promise.then(handler2);
+
+                                            promise.then(new Fulfillable() {
+                                                @Override
+                                                public Object fulfill(Object o) throws Exception {
+                                                    //Log.e("JA", "HIER");
+                                                    boolean a = handler1.lastCall() < handler2.lastCall();
+                                                    boolean b = handler2.lastCall() < handler3.lastCall();
+                                                    boolean c = a && b;
+
+                                                    Assert.assertTrue("Handlers called in incorrect order", c);
+
+                                                    return null;
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
                             }
                         });
                     }

@@ -3,9 +3,6 @@ package nl.brusque.pinky;
 import android.util.Log;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import nl.brusque.pinky.android.IRejectable;
 import nl.brusque.pinky.events.FireFulfillsEvent;
@@ -17,22 +14,58 @@ import nl.brusque.pinky.events.ThenEvent;
 
 public abstract class AbstractPromise<TResult extends IPromise> implements IPromise<AbstractPromise<TResult>> {
     private final PromiseStateHandler _promiseState = new PromiseStateHandler();
-    private final ArrayDeque<IFulfillable> _onFulfilleds  = new ArrayDeque<>();
-    private final ArrayDeque<IRejectable> _onRejecteds    = new ArrayDeque<>();
-    private AbstractPromise<TResult> _nextPromise;
+    private final ArrayDeque<FulfillableWithPromise> _onFulfilleds  = new ArrayDeque<>();
+    private final ArrayDeque<RejectableWithPromise> _onRejecteds    = new ArrayDeque<>();
     private final Thread _looper;
 
     private ArrayDeque<IEvent> _eventQueue = new ArrayDeque<>();
+
+    private class FulfillableWithPromise {
+        private final AbstractPromise<TResult> _promise;
+        private final IFulfillable _fulfillable;
+
+        public FulfillableWithPromise(IFulfillable fulfillable, AbstractPromise<TResult> promise) {
+            _promise = promise;
+            _fulfillable = fulfillable;
+        }
+
+        public AbstractPromise<TResult> getPromise() {
+            return _promise;
+        }
+
+        public IFulfillable getFulfillable() {
+            return _fulfillable;
+        }
+    }
+
+    private class RejectableWithPromise {
+        private final AbstractPromise<TResult> _promise;
+        private final IRejectable rejectable;
+
+        public RejectableWithPromise(IRejectable rejectable, AbstractPromise<TResult> promise) {
+            _promise = promise;
+            this.rejectable = rejectable;
+        }
+
+        public AbstractPromise<TResult> getPromise() {
+            return _promise;
+        }
+
+        public IRejectable getFulfillable() {
+            return rejectable;
+        }
+    }
+
 
     private void queueEvent(IEvent event) {
         _eventQueue.add(event);
     }
 
-    private synchronized void addFulfillable(IFulfillable fulfillable) {
-        _onFulfilleds.add(fulfillable);
+    private synchronized void addFulfillable(IFulfillable fulfillable, AbstractPromise nextPromise) {
+        _onFulfilleds.add(new FulfillableWithPromise(fulfillable, nextPromise));
     }
-    private synchronized void addRejectable(IRejectable rejectable) {
-        _onRejecteds.add(rejectable);
+    private synchronized void addRejectable(IRejectable rejectable, AbstractPromise nextPromise) {
+        _onRejecteds.add(new RejectableWithPromise(rejectable, nextPromise));
     }
 
     private void processNextEvent() {
@@ -89,11 +122,11 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
         }
 
         if (isFulfillable) {
-            addFulfillable((IFulfillable)event.onFulfilled);
+            addFulfillable((IFulfillable)event.onFulfilled, event.nextPromise);
         }
 
         if (isRejectable) {
-            addRejectable((IRejectable)event.onRejected);
+            addRejectable((IRejectable)event.onRejected, event.nextPromise);
         }
 
         if (_promiseState.isRejected()) {
@@ -131,17 +164,17 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
             //    for (IFulfillable fulfilled : _onFulfilleds) {
 
                 while (!_onFulfilleds.isEmpty()) {
-                    IFulfillable fulfilled = _onFulfilleds.remove();
+                    FulfillableWithPromise fulfilled = _onFulfilleds.remove();
 
                     try {
-                        Object result = runFulfill(fulfilled, _promiseState.getResolvedWith());
+                        Object result = runFulfill(fulfilled.getFulfillable(), _promiseState.getResolvedWith());
                         // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
                         if (result != null) { // FIXME Generics / Void
-                            _nextPromise.resolve(result);
+                            fulfilled.getPromise().resolve(result);
                         }
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
-                        _nextPromise.reject(e);
+                        fulfilled.getPromise().reject(e);
                     }
                 }
         //    }
@@ -168,17 +201,17 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                 //for (IRejectable onRejected : _onRejecteds) {
 
                 while (!_onRejecteds.isEmpty()) {
-                    IRejectable onRejected = _onRejecteds.remove();
+                    RejectableWithPromise onRejected = _onRejecteds.remove();
 
                     try {
-                        Object result = runReject(onRejected, _promiseState.RejectedWith());
+                        Object result = runReject(onRejected.rejectable, _promiseState.RejectedWith());
                         // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
                         if (result != null) { // FIXME Generics / Void
-                            _nextPromise.reject(result);
+                            onRejected.getPromise().reject(result);
                         }
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
-                        _nextPromise.reject(e);
+                        onRejected.getPromise().reject(e);
                     }
                 }
         //    }
@@ -197,12 +230,9 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
     }
 
     public AbstractPromise<TResult> then(Object onFulfilled, Object onRejected) {
-        queueEvent(new ThenEvent(onFulfilled, onRejected));
+        AbstractPromise<TResult> nextPromise = create();
+        queueEvent(new ThenEvent<>(onFulfilled, onRejected, nextPromise));
 
-        if (_nextPromise == null) {
-            _nextPromise = create();
-        }
-
-        return _nextPromise;
+        return nextPromise;
     }
 }
