@@ -1,9 +1,9 @@
 package nl.brusque.pinky.events;
 
-public class RejectEvent implements IEvent {
+public class ResolveEvent implements IEvent {
     private final Object _o;
 
-    public RejectEvent(Object o) {
+    public ResolveEvent(Object o) {
         _o = o;
     }
 

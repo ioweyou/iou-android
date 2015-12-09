@@ -9,12 +9,12 @@ public class Promise extends AbstractPromise<IPromise> {
 
     @Override
     public boolean isFulfillable(Object onFulfilled) {
-        return onFulfilled != null && onFulfilled instanceof Fulfillable;
+        return onFulfilled != null && onFulfilled instanceof IFulfillable;
     }
 
     @Override
     public boolean isRejectable(Object onRejected) {
-        return onRejected != null && onRejected instanceof Rejectable;
+        return onRejected != null && onRejected instanceof IRejectable;
     }
 
     @Override

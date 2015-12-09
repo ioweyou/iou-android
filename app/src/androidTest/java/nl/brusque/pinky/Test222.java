@@ -55,7 +55,7 @@ public class Test222 extends PromiseTest {
                             });
 
                             delay(150);
-                            Assert.assertFalse("OnFulfilled should not have been called", onFulfilledCalled[0]);
+                            Assert.assertFalse("onFulfilled should not have been called", onFulfilledCalled[0]);
                         }
                     });
                     }
@@ -213,7 +213,5 @@ public class Test222 extends PromiseTest {
                 });
             }
         });
-
-        delay(3000);
     }
 }

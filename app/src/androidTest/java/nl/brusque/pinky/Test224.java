@@ -116,7 +116,7 @@ public class Test224 extends PromiseTest {
                         specify("when the promise is fulfilled asynchronously", new Runnable() {
                             @Override
                             public void run() {
-                                Pinky d = deferred();
+                                final Pinky d = deferred();
                                 final boolean[] firstStackFinished = {false};
 
                                 d.getPromise().then(new Fulfillable() {
@@ -128,8 +128,15 @@ public class Test224 extends PromiseTest {
                                     }
                                 });
 
-                                delay(50);
-                                d.resolve(dummy);
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        d.resolve(dummy);
+                                        firstStackFinished[0] = true;
+                                    }
+                                }.start();
+
+
                                 delay(50);
                             }
                         });
@@ -176,7 +183,6 @@ public class Test224 extends PromiseTest {
                                         return null;
                                     }
                                 });
-
 
 
                                 Assert.assertFalse("onRejected should not have been called.", onRejectedCalled[0]);
@@ -242,7 +248,7 @@ public class Test224 extends PromiseTest {
                         specify("when the promise is rejected asynchronously", new Runnable() {
                             @Override
                             public void run() {
-                                Pinky d = deferred();
+                                final Pinky d = deferred();
                                 final boolean[] firstStackFinished = {false};
 
                                 d.getPromise().then(null, new Rejectable() {
@@ -254,8 +260,15 @@ public class Test224 extends PromiseTest {
                                     }
                                 });
 
-                                delay(50);
-                                d.reject(dummy);
+
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        d.reject(dummy);
+                                        firstStackFinished[0] = true;
+                                    }
+                                }.start();
+
                                 delay(50);
                             }
                         });

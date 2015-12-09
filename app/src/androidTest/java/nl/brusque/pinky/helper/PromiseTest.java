@@ -52,24 +52,24 @@ public class PromiseTest extends ApplicationTestCase<Application> {
     }
 
     public void testFulfilled(final Object value, final Testable test) {
-        specify("already-fulfilled", new Runnable() {
-            @Override
-            public void run() {
-                test.setPromise(resolved(value));
-
-                test.run();
-            }
-        });
-
-        specify("immediately-fulfilled", new Runnable() {
-            @Override
-            public void run() {
-                Pinky d = deferred();
-                test.setPromise(d.getPromise());
-                test.run();
-                d.resolve(value);
-            }
-        });
+//        specify("already-fulfilled", new Runnable() {
+//            @Override
+//            public void run() {
+//                test.setPromise(resolved(value));
+//
+//                test.run();
+//            }
+//        });
+//
+//        specify("immediately-fulfilled", new Runnable() {
+//            @Override
+//            public void run() {
+//                Pinky d = deferred();
+//                test.setPromise(d.getPromise());
+//                test.run();
+//                d.resolve(value);
+//            }
+//        });
 
         specify("eventually-fulfilled", new Runnable() {
             @Override

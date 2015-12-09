@@ -31,11 +31,14 @@ public class Spy implements ISpy {
     }
 
     public Object call(Object o) throws Exception {
-        Thread.sleep(1);
-        //Log.w("CALL", o!=null ? String.valueOf(o) : "NULL");
+        Thread.sleep(1); // FIXME delay for '_lastCall'
         increaseCallCount();
         updateCalledWith(o);
         _lastCall = System.currentTimeMillis();
+
+        if (_result.equals("DUMMYA") || _result.equals("DUMMYB") || _result.equals("DUMMYC")) {
+            Log.w("CALL", String.valueOf(_lastCall));
+        }
 
         if (_throwsError) {
             throw new Exception();
