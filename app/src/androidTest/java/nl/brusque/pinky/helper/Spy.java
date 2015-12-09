@@ -26,13 +26,13 @@ public class Spy implements ISpy {
         return _calledWith[0];
     }
 
-    public long lastCall() {
+    public synchronized long lastCall() {
         return _lastCall;
     }
 
     public Object call(Object o) throws Exception {
         Thread.sleep(1);
-        Log.w("CALL", o!=null ? String.valueOf(o) : "NULL");
+        //Log.w("CALL", o!=null ? String.valueOf(o) : "NULL");
         increaseCallCount();
         updateCalledWith(o);
         _lastCall = System.currentTimeMillis();

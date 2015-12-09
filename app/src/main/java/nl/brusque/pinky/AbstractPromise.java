@@ -1,5 +1,7 @@
 package nl.brusque.pinky;
 
+import android.util.Log;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
     private final List<IFulfillable> _onFulfilleds  = new ArrayList<>();
     private final List<IRejectable> _onRejecteds    = new ArrayList<>();
     private AbstractPromise<TResult> _nextPromise;
+    private final Thread _looper;
 
     private Queue<IEvent> _eventQueue = new ArrayDeque<>();
 
@@ -26,6 +29,10 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
     }
 
     private void processNextEvent() {
+        if (_eventQueue.isEmpty()) {
+            return;
+        }
+
         IEvent event = _eventQueue.remove();
         if (event instanceof ThenEvent) {
             processEvent((ThenEvent)event);
@@ -46,17 +53,14 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     private void processEvent(ThenEvent event) {
         if (_promiseState.isRejected()) {
-            //nextReject();
             pushEvent(new RejectEvent());
         } else if (_promiseState.isResolved()) {
             pushEvent(new FulfillEvent());
-            //nextResolve();
         }
     }
 
     public AbstractPromise() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(new Runnable() {
+        _looper = new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true) {
@@ -65,7 +69,7 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
             }
         });
 
-        executor.shutdown();
+        _looper.start();
     }
 
     public AbstractPromise<TResult> resolve(final Object o) {
