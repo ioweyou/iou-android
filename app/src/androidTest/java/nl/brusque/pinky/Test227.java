@@ -1,5 +1,7 @@
 package nl.brusque.pinky;
 
+import android.util.Log;
+
 import junit.framework.Assert;
 
 import java.util.Date;
@@ -68,10 +70,10 @@ public class Test227 extends PromiseTest {
                             @Override
                             public void run() {
                                 testFulfilled(dummy, new Testable() {
-                                    IPromise promise1 = getPromise();
-
                                     @Override
                                     public void run() {
+                                        final IPromise promise1 = getPromise();
+
                                         IThenable promise2 = promise1.then(new Fulfillable() {
                                             @Override
                                             public Object fulfill(Object o) throws Exception {
@@ -82,7 +84,35 @@ public class Test227 extends PromiseTest {
                                         promise2.then(null, new Rejectable() {
                                             @Override
                                             public Object reject(Object o) throws Exception {
-                                                Assert.assertEquals("Incorrect reaason", expectedReason, o);
+                                                Exception e = (Exception)o;
+
+                                                Log.e("HOI", String.format("a: %s, b: %s", expectedReason, e.getMessage()));
+                                                Assert.assertEquals("Incorrect reason", expectedReason, e.getMessage());
+
+                                                return null;
+                                            }
+                                        });
+                                    }
+                                });
+
+                                testRejected(dummy, new Testable() {
+                                    @Override
+                                    public void run() {
+                                        IPromise promise1 = getPromise();
+
+                                        IThenable promise2 = promise1.then(null, new Rejectable() {
+                                            @Override
+                                            public Object reject(Object o) throws Exception {
+                                                throw new Exception(String.valueOf(expectedReason));
+                                            }
+                                        });
+
+                                        promise2.then(null, new Rejectable() {
+                                            @Override
+                                            public Object reject(Object o) throws Exception {
+                                                Exception e = (Exception)o;
+
+                                                Assert.assertEquals("Incorrect reason", expectedReason, e.getMessage());
 
                                                 return null;
                                             }

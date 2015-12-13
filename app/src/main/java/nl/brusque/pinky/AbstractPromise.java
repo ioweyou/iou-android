@@ -11,9 +11,11 @@ import nl.brusque.pinky.events.FireRejectsEvent;
 import nl.brusque.pinky.events.RejectEvent;
 import nl.brusque.pinky.events.ResolveEvent;
 import nl.brusque.pinky.events.ThenEvent;
+import nl.brusque.pinky.helper.FulfillableSpy;
+import nl.brusque.pinky.promise.Fulfillable;
 
 public abstract class AbstractPromise<TResult extends IPromise> implements IPromise<AbstractPromise<TResult>> {
-    private final PromiseStateHandler _promiseState = new PromiseStateHandler();
+    private final PromiseStateHandler _promiseState                 = new PromiseStateHandler();
     private final ArrayDeque<FulfillableWithPromise> _onFulfilleds  = new ArrayDeque<>();
     private final ArrayDeque<RejectableWithPromise> _onRejecteds    = new ArrayDeque<>();
     private final Thread _looper;
@@ -68,7 +70,7 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
         _onRejecteds.add(new RejectableWithPromise(rejectable, nextPromise));
     }
 
-    private void processNextEvent() {
+    private synchronized void processNextEvent() {
         if (_eventQueue.isEmpty()) {
             return;
         }
@@ -119,6 +121,19 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
         if (!isFulfillable || !isRejectable) {
             Log.w("PROCESS", String.format("isFulfillable: %s, isRejectable: %s", isFulfillable, isRejectable));
+        }
+
+        if (event.onFulfilled instanceof FulfillableSpy) {
+            String name = ((FulfillableSpy)event.onFulfilled).getName();
+            if (name.isEmpty()) {
+                name = "<NONE>";
+            }
+
+            if (name.equals("handler3")) {
+                Log.e("EVEN", name);
+            }
+
+            Log.e("NAME", name);
         }
 
         if (isFulfillable) {

@@ -8,6 +8,7 @@ public class Spy implements ISpy {
     private final int[] _callCount = {0};
     private final Object[] _calledWith = {null};
     private long _lastCall = 0;
+    private String _name = "";
 
     public void increaseCallCount() {
         _callCount[0]++;
@@ -26,8 +27,12 @@ public class Spy implements ISpy {
         return _calledWith[0];
     }
 
-    public synchronized long lastCall() {
+    public long lastCall() {
         return _lastCall;
+    }
+
+    public String getName() {
+        return _name;
     }
 
     public Object call(Object o) throws Exception {
@@ -57,6 +62,12 @@ public class Spy implements ISpy {
 
     public ISpy throwsError() {
         _throwsError = true;
+
+        return this;
+    }
+
+    public ISpy name(String name) {
+        _name = name;
 
         return this;
     }
