@@ -13,6 +13,8 @@ import nl.brusque.pinky.events.ResolveEvent;
 import nl.brusque.pinky.events.ThenEvent;
 import nl.brusque.pinky.helper.FulfillableSpy;
 import nl.brusque.pinky.promise.Fulfillable;
+import nl.brusque.pinky.promise.TypeError;
+import nl.brusque.pinky.promise.TypeErrorException;
 
 public abstract class AbstractPromise<TResult extends IPromise> implements IPromise<AbstractPromise<TResult>> {
     private final PromiseStateHandler _promiseState                 = new PromiseStateHandler();
@@ -183,10 +185,19 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
                     try {
                         Object result = runFulfill(fulfilled.getFulfillable(), _promiseState.getResolvedWith());
-                        // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
-                        if (result != null) { // FIXME Generics / Void
-                            fulfilled.getPromise().resolve(result);
+                        if (result == null) {
+                            return;
                         }
+
+                        if (result.equals(this)) {
+                            throw new TypeErrorException();
+                        }
+
+                        // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
+                        fulfilled.getPromise().resolve(result);
+                    } catch (TypeErrorException e) {
+                        // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
+                        fulfilled.getPromise().reject(new TypeError());
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
                         fulfilled.getPromise().reject(e);
@@ -220,10 +231,19 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
                     try {
                         Object result = runReject(onRejected.rejectable, _promiseState.RejectedWith());
-                        // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
-                        if (result != null) { // FIXME Generics / Void
-                            onRejected.getPromise().reject(result);
+                        if (result == null) {
+                            return;
                         }
+
+                        if (result.equals(this)) {
+                            throw new TypeErrorException();
+                        }
+
+                        // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
+                        onRejected.getPromise().reject(result);
+                    } catch (TypeErrorException e) {
+                        // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
+                        onRejected.getPromise().reject(new TypeError());
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
                         onRejected.getPromise().reject(e);
