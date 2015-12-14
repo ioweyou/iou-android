@@ -1,9 +1,9 @@
 package nl.brusque.pinky.events;
 
-public class ResolveEvent implements IEvent {
+public class FulfillEvent implements IEvent {
     private final Object _o;
 
-    public ResolveEvent(Object o) {
+    public FulfillEvent(Object o) {
         _o = o;
     }
 

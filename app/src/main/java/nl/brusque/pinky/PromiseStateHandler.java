@@ -28,7 +28,7 @@ public class PromiseStateHandler {
         return _state == State.REJECTED;
     }
 
-    public void resolve(Object o) {
+    public void fulfill(Object o) {
         _state = State.RESOLVED;
 
         _resolvedWith = o;

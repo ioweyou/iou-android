@@ -9,10 +9,11 @@ import nl.brusque.pinky.events.FireFulfillsEvent;
 import nl.brusque.pinky.events.IEvent;
 import nl.brusque.pinky.events.FireRejectsEvent;
 import nl.brusque.pinky.events.RejectEvent;
-import nl.brusque.pinky.events.ResolveEvent;
+import nl.brusque.pinky.events.FulfillEvent;
 import nl.brusque.pinky.events.ThenEvent;
 import nl.brusque.pinky.helper.FulfillableSpy;
 import nl.brusque.pinky.promise.Fulfillable;
+import nl.brusque.pinky.promise.Rejectable;
 import nl.brusque.pinky.promise.TypeError;
 import nl.brusque.pinky.promise.TypeErrorException;
 
@@ -84,29 +85,61 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
             processEvent((FireFulfillsEvent) event);
         } else if (event instanceof FireRejectsEvent) {
             processEvent((FireRejectsEvent)event);
-        } else if (event instanceof ResolveEvent) {
-            processEvent((ResolveEvent)event);
+        } else if (event instanceof FulfillEvent) {
+            processEvent((FulfillEvent)event);
         } else if (event instanceof RejectEvent) {
             processEvent((RejectEvent)event);
         }
     }
 
-    private void processEvent(ResolveEvent event) {
+    private void processEvent(FulfillEvent event) {
         if (!_promiseState.isPending()) {
             return;
         }
 
-        _promiseState.resolve(event.getValue());
+        if (event.getValue() instanceof IPromise) {
+            resolvePromise((IPromise)event.getValue());
+
+            return;
+        }
+
+        _promiseState.fulfill(event.getValue());
         queueEvent(new FireFulfillsEvent());
     }
 
-    private void processEvent(RejectEvent event) {
+    private void processEvent(final RejectEvent event) {
         if (!_promiseState.isPending()) {
+            return;
+        }
+
+        if (event.getValue() instanceof IPromise) {
+            resolvePromise((IPromise)event.getValue());
+
             return;
         }
 
         _promiseState.reject(event.getValue());
         queueEvent(new FireRejectsEvent());
+    }
+
+    private void resolvePromise(IPromise promise) {
+        promise.then(new Fulfillable() {
+            @Override
+            public Object fulfill(Object o) throws Exception {
+                _promiseState.fulfill(o);
+                queueEvent(new FireFulfillsEvent());
+
+                return o;
+            }
+        }, new Rejectable() {
+            @Override
+            public Object reject(Object o) throws Exception {
+                _promiseState.reject(o);
+                queueEvent(new FireRejectsEvent());
+
+                return o;
+            }
+        });
     }
 
     private void processEvent(FireFulfillsEvent event) {
@@ -123,19 +156,6 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
         if (!isFulfillable || !isRejectable) {
             Log.w("PROCESS", String.format("isFulfillable: %s, isRejectable: %s", isFulfillable, isRejectable));
-        }
-
-        if (event.onFulfilled instanceof FulfillableSpy) {
-            String name = ((FulfillableSpy)event.onFulfilled).getName();
-            if (name.isEmpty()) {
-                name = "<NONE>";
-            }
-
-            if (name.equals("handler3")) {
-                Log.e("EVEN", name);
-            }
-
-            Log.e("NAME", name);
         }
 
         if (isFulfillable) {
@@ -167,7 +187,21 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
     }
 
     public AbstractPromise<TResult> resolve(final Object o) {
-        queueEvent(new ResolveEvent(o));
+        if (!_promiseState.isPending()) {
+            return this;
+        }
+
+        try {
+            if (o!=null && o.equals(this)) {
+                throw new TypeErrorException();
+            }
+        } catch (TypeErrorException e) {
+            // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
+            queueEvent(new RejectEvent(new TypeError()));
+            return this;
+        }
+
+        queueEvent(new FulfillEvent(o));
 
         return this;
     }
@@ -189,15 +223,8 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                             return;
                         }
 
-                        if (result.equals(this)) {
-                            throw new TypeErrorException();
-                        }
-
                         // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
                         fulfilled.getPromise().resolve(result);
-                    } catch (TypeErrorException e) {
-                        // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
-                        fulfilled.getPromise().reject(new TypeError());
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
                         fulfilled.getPromise().reject(e);
@@ -211,6 +238,16 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
 
     public AbstractPromise<TResult> reject(final Object o) {
         if (!_promiseState.isPending()) {
+            return this;
+        }
+
+        try {
+            if (o!=null && o.equals(this)) {
+                throw new TypeErrorException();
+            }
+        } catch (TypeErrorException e) {
+            // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
+            queueEvent(new RejectEvent(new TypeError()));
             return this;
         }
 
@@ -235,15 +272,8 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
                             return;
                         }
 
-                        if (result.equals(this)) {
-                            throw new TypeErrorException();
-                        }
-
                         // 2.2.7.1 If either onFulfilled or onRejected returns a value x, run the Promise Resolution Procedure [[Resolve]](promise2, x).
                         onRejected.getPromise().reject(result);
-                    } catch (TypeErrorException e) {
-                        // 2.3.1: If `promise` and `x` refer to the same object, reject `promise` with a `TypeError' as the reason.
-                        onRejected.getPromise().reject(new TypeError());
                     } catch (Exception e) {
                         // 2.2.7.2 If either onFulfilled or onRejected throws an exception e, promise2 must be rejected with e as the reason.
                         onRejected.getPromise().reject(e);
