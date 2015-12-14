@@ -4,8 +4,10 @@ import android.util.Log;
 
 import junit.framework.Assert;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import nl.brusque.pinky.helper.PromiseTest;
 import nl.brusque.pinky.helper.Testable;
@@ -24,16 +26,15 @@ public class Test231 extends PromiseTest {
                 specify("via return from a fulfilled promise", new Runnable() {
                     @Override
                     public void run() {
-                        final IThenable promise = resolved(dummy);
-
-                        promise.then(new Fulfillable() {
+                        final List<IThenable> promises = new ArrayList<>();
+                        promises.add(resolved(dummy).then(new Fulfillable() {
                             @Override
                             public Object fulfill(Object o) throws Exception {
-                                return promise;
+                                return promises.get(0);
                             }
-                        });
+                        }));
 
-                        promise.then(null, new Rejectable() {
+                        promises.get(0).then(null, new Rejectable() {
                             @Override
                             public Object reject(Object o) throws Exception {
                                 Assert.assertTrue("Object should be TypeError", o instanceof TypeError);
@@ -47,16 +48,16 @@ public class Test231 extends PromiseTest {
                 specify("via return from a rejected promise", new Runnable() {
                     @Override
                     public void run() {
-                        final IThenable promise = rejected(dummy);
+                        final List<IThenable> promises = new ArrayList<>();
 
-                        promise.then(null, new Rejectable() {
+                        promises.add(rejected(dummy).then(null, new Rejectable() {
                             @Override
                             public Object reject(Object o) throws Exception {
-                                return promise;
+                                return promises.get(0);
                             }
-                        });
+                        }));
 
-                        promise.then(null, new Rejectable() {
+                        promises.get(0).then(null, new Rejectable() {
                             @Override
                             public Object reject(Object o) throws Exception {
                                 Assert.assertTrue("Object should be TypeError", o instanceof TypeError);
@@ -69,6 +70,6 @@ public class Test231 extends PromiseTest {
             }
         });
 
-        delay(5000);
+        delay(50000);
     }
 }
