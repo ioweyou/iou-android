@@ -1,5 +1,15 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://localhost/tmp/myRepo/")
+        }
+    }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"

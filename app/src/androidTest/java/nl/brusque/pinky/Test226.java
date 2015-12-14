@@ -219,7 +219,6 @@ public class Test226 extends PromiseTest {
                                             promise.then(new Fulfillable() {
                                                 @Override
                                                 public Object fulfill(Object o) throws Exception {
-                                                    //Log.e("JA", "HIER");
                                                     new Timer().schedule(new TimerTask() {
                                                         @Override
                                                         public void run() {
@@ -397,11 +396,6 @@ public class Test226 extends PromiseTest {
                                                 boolean b = handler2.lastCall() < handler3.lastCall();
                                                 boolean c = a && b;
 
-                                                Log.e("HANDLER1.lastCall", String.valueOf(handler1.lastCall()));
-                                                Log.e("HANDLER2.lastCall", String.valueOf(handler2.lastCall()));
-                                                Log.e("HANDLER3.lastCall", String.valueOf(handler3.lastCall()));
-
-                                                //Log.e("JAMAARWEL", String.valueOf(c));
                                                 Assert.assertTrue("Handlers called in incorrect order", c);
 
                                                 return null;
@@ -436,7 +430,6 @@ public class Test226 extends PromiseTest {
                                                 promise.then(null, new RejectableSpy() {
                                                     @Override
                                                     public Object reject(Object o) throws Exception {
-                                                        //Log.e("JA", "HIER");
                                                         new Timer().schedule(new TimerTask() {
                                                             @Override
                                                             public void run() {

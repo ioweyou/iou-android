@@ -70,6 +70,6 @@ public class Test231 extends PromiseTest {
             }
         });
 
-        delay(50000);
+        delay(5000);
     }
 }

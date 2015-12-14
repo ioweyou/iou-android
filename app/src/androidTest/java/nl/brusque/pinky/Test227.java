@@ -22,31 +22,9 @@ public class Test227 extends PromiseTest {
             final String sentinel2 = "sentinel2";
             final String sentinel3 = "sentinel3";
 
-            final HashMap<String, Object> reasons = new HashMap<String, Object>() {{
+            final HashMap<String, Throwable> reasons = new HashMap<String, Throwable>() {{
                 put("`null`", null);
-                put("`false`", false);
-                put("`0`", 0);
                 put("an error", new Error());
-                put("a date", new Date());
-                put("an object", new Object());
-                put("an always-pending thenable", new IThenable() {
-                    @Override
-                    public IPromise then() {
-                        return new Promise();
-                    }
-
-                    @Override
-                    public IPromise then(Object onFulfilled) {
-                        return new Promise();
-                    }
-
-                    @Override
-                    public IPromise then(Object onFulfilled, Object onRejected) {
-                        return new Promise();
-                    }
-                });
-                put("a fulfilled promise", resolved(dummy));
-                put("a rejected promise", resolved(dummy));
             }};
 
 
@@ -64,7 +42,7 @@ public class Test227 extends PromiseTest {
                 });
 
                 describe("2.2.7.2: If either `onFulfilled` or `onRejected` throws an exception `e`, `promise2` must be rejected with `e` as the reason.", new Runnable() {
-                    private void testReason(final Object expectedReason, String stringRepresentation) {
+                    private void testReason(final Throwable expectedReason, String stringRepresentation) {
                         describe(String.format("The reason is %s", stringRepresentation), new Runnable() {
 
                             @Override
@@ -77,17 +55,16 @@ public class Test227 extends PromiseTest {
                                         IThenable promise2 = promise1.then(new Fulfillable() {
                                             @Override
                                             public Object fulfill(Object o) throws Exception {
-                                                throw new Exception(String.valueOf(expectedReason));
+                                                throw new Exception(expectedReason);
                                             }
                                         });
 
                                         promise2.then(null, new Rejectable() {
                                             @Override
                                             public Object reject(Object o) throws Exception {
-                                                Exception e = (Exception)o;
+                                                Throwable e = o!=null ? ((Exception)o).getCause() : null;
 
-                                                Log.e("HOI", String.format("a: %s, b: %s", expectedReason, e.getMessage()));
-                                                Assert.assertEquals("Incorrect reason", expectedReason, e.getMessage());
+                                                Assert.assertEquals("Incorrect reason", expectedReason, e);
 
                                                 return null;
                                             }
@@ -103,16 +80,16 @@ public class Test227 extends PromiseTest {
                                         IThenable promise2 = promise1.then(null, new Rejectable() {
                                             @Override
                                             public Object reject(Object o) throws Exception {
-                                                throw new Exception(String.valueOf(expectedReason));
+                                                throw new Exception(expectedReason);
                                             }
                                         });
 
                                         promise2.then(null, new Rejectable() {
                                             @Override
                                             public Object reject(Object o) throws Exception {
-                                                Exception e = (Exception)o;
+                                                Throwable e = o!=null ? ((Exception)o).getCause() : null;
 
-                                                Assert.assertEquals("Incorrect reason", expectedReason, e.getMessage());
+                                                Assert.assertEquals("Incorrect reason", expectedReason, e);
 
                                                 return null;
                                             }
@@ -134,6 +111,7 @@ public class Test227 extends PromiseTest {
             }
         });
 
+        delay(5000);
 
     }
 }

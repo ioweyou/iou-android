@@ -23,7 +23,7 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
     private final ArrayDeque<RejectableWithPromise> _onRejecteds    = new ArrayDeque<>();
     private final Thread _looper;
 
-    private ArrayDeque<IEvent> _eventQueue = new ArrayDeque<>();
+    private final ArrayDeque<IEvent> _eventQueue = new ArrayDeque<>();
 
     private class FulfillableWithPromise {
         private final AbstractPromise<TResult> _promise;
@@ -73,12 +73,20 @@ public abstract class AbstractPromise<TResult extends IPromise> implements IProm
         _onRejecteds.add(new RejectableWithPromise(rejectable, nextPromise));
     }
 
-    private synchronized void processNextEvent() {
+    private synchronized IEvent dequeue() {
         if (_eventQueue.isEmpty()) {
+            return null;
+        }
+
+        return _eventQueue.remove();
+    }
+
+    private synchronized void processNextEvent() {
+        IEvent event = dequeue();
+        if (event == null) {
             return;
         }
 
-        IEvent event = _eventQueue.remove();
         if (event instanceof ThenEvent) {
             processEvent((ThenEvent)event);
         } else if (event instanceof FireFulfillsEvent) {
