@@ -14,6 +14,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url = "http://php53-dev.ad.infi.nl/~ely/maven2"
+        }
         jcenter()
     }
 }

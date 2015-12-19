@@ -1,6 +1,6 @@
-package nl.brusque.pinky.android;
+package nl.brusque.androidiou;
 
-import nl.brusque.pinky.IFulfillable;
+import nl.brusque.iou.IFulfillable;
 
 public abstract class AndroidFulfillable implements IFulfillable, IAndroidScopable {
 

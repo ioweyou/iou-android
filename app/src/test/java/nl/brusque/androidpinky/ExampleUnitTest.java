@@ -1,4 +1,4 @@
-package nl.brusque.pinky;
+package nl.brusque.androidiou;
 
 import org.junit.Test;
 
