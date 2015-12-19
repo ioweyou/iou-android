@@ -1,11 +1,19 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 apply plugin: 'maven'
+
+version = "0.1-SNAPSHOT"
+group = "nl.brusque.iouandroid"
+
+configurations {
+    deployerJars
+}
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file://localhost/tmp/myRepo/")
+            configuration = configurations.deployerJars
+            repository(url: "scp://php53-dev.ad.infi.nl/home/ely/public_html/maven2")
         }
     }
 }
@@ -15,7 +23,6 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "nl.brusque.androidpinky"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
@@ -32,6 +39,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+    deployerJars "org.apache.maven.wagon:wagon-ssh:2.9"
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'nl.brusque.iou:iou-core:0.1-SNAPSHOT'
 }
