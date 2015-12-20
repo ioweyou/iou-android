@@ -3,19 +3,19 @@ package nl.brusque.androidiou;
 import android.app.Activity;
 import android.content.Context;
 
-import nl.brusque.iou.DefaultRejector;
+import nl.brusque.iou.DefaultThenCallable;
 
-public class AndroidRejector extends DefaultRejector<AndroidRejectable> {
+public class AndroidThenCaller extends DefaultThenCallable<AndroidThenCallable> {
     private final Context _context;
 
-    public AndroidRejector(Context context) {
+    public AndroidThenCaller(Context context) {
         _context = context;
     }
 
     @Override
-    public Object reject(final AndroidRejectable rejectable, final Object o) throws Exception {
-        if (rejectable.getExecutionScope().equals(AndroidPromise.ExecutionScope.BACKGROUND)) {
-            return super.reject(rejectable, o);
+    public Object call(final AndroidThenCallable fulfillable, final Object o) throws Exception {
+        if (fulfillable.getExecutionScope().equals(AndroidPromise.ExecutionScope.BACKGROUND)) {
+            return super.call(fulfillable, o);
         }
 
         final Object[] result = new Object[1];
@@ -23,7 +23,7 @@ public class AndroidRejector extends DefaultRejector<AndroidRejectable> {
             @Override
             public void run() {
                 try {
-                    result[0] = AndroidRejector.super.reject(rejectable, o);
+                    result[0] = AndroidThenCaller.super.call(fulfillable, o);
 
                     synchronized (this) {
                         this.notify();

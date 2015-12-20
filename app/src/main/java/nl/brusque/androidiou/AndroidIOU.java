@@ -4,7 +4,7 @@ import android.content.Context;
 
 import nl.brusque.iou.AbstractIOU;
 
-public class AndroidIOU extends AbstractIOU<AndroidPromise, AndroidFulfillable, AndroidRejectable> {
+public class AndroidIOU extends AbstractIOU<AndroidPromise, AndroidThenCallable, AndroidThenCallable> {
     private final AndroidPromise _promise;
 
     public AndroidIOU(Context context) {

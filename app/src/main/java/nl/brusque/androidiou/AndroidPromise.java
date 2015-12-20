@@ -4,7 +4,7 @@ import android.content.Context;
 
 import nl.brusque.iou.AbstractPromise;
 
-public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidFulfillable, AndroidRejectable> {
+public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidThenCallable, AndroidThenCallable> {
     private final Context _context;
 
     public enum ExecutionScope {
@@ -13,7 +13,7 @@ public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidFulfi
     }
 
     public AndroidPromise(Context context) {
-        super(AndroidFulfillable.class, AndroidRejectable.class, null, null, new AndroidFulfiller(context) , new AndroidRejector(context));
+        super(AndroidThenCallable.class, AndroidThenCallable.class, null, null, new AndroidThenCaller(context) , new AndroidThenCaller(context));
 
         _context = context;
     }

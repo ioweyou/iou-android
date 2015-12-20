@@ -6,9 +6,6 @@ import android.util.Log;
 
 import junit.framework.Assert;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
@@ -20,26 +17,26 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
     public void testTestOne() {
         AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
-        iou.getPromise().then(new AndroidFulfillable() {
+        iou.getPromise().then(new AndroidThenCallable() {
             @Override
             public AndroidPromise.ExecutionScope getExecutionScope() {
                 return AndroidPromise.ExecutionScope.BACKGROUND;
             }
 
             @Override
-            public Object fulfill(Object o) throws Exception {
+            public Object call(Object o) throws Exception {
                 Log.i("JUST", "TEST");
 
                 return o;
             }
-        }, new AndroidRejectable() {
+        }, new AndroidThenCallable() {
             @Override
             public AndroidPromise.ExecutionScope getExecutionScope() {
                 return AndroidPromise.ExecutionScope.BACKGROUND;
             }
 
             @Override
-            public Object reject(Object o) throws Exception {
+            public Object call(Object o) throws Exception {
                 Log.i("JUST", "REJECT");
                 return o;
             }
