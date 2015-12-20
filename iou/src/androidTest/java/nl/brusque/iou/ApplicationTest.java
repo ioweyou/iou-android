@@ -1,4 +1,4 @@
-package nl.brusque.androidiou;
+package nl.brusque.iou;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

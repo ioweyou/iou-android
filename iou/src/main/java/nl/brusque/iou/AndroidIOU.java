@@ -1,8 +1,6 @@
-package nl.brusque.androidiou;
+package nl.brusque.iou;
 
 import android.content.Context;
-
-import nl.brusque.iou.AbstractIOU;
 
 public class AndroidIOU extends AbstractIOU<AndroidPromise, AndroidThenCallable, AndroidThenCallable> {
     private final AndroidPromise _promise;
@@ -15,4 +13,13 @@ public class AndroidIOU extends AbstractIOU<AndroidPromise, AndroidThenCallable,
     public AndroidPromise getPromise() {
         return _promise;
     }
+
+    public AndroidPromise resolve(Object o) {
+        return (AndroidPromise)super.resolve(o);
+    }
+
+    public AndroidPromise reject(Object o) {
+        return (AndroidPromise)super.reject(o);
+    }
+
 }

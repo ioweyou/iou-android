@@ -1,9 +1,7 @@
-package nl.brusque.androidiou;
+package nl.brusque.iou;
 
 import android.app.Activity;
 import android.content.Context;
-
-import nl.brusque.iou.DefaultThenCallable;
 
 public class AndroidThenCaller extends DefaultThenCallable<AndroidThenCallable> {
     private final Context _context;

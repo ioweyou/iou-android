@@ -1,8 +1,6 @@
-package nl.brusque.androidiou;
+package nl.brusque.iou;
 
 import android.content.Context;
-
-import nl.brusque.iou.AbstractPromise;
 
 public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidThenCallable, AndroidThenCallable> {
     private final Context _context;

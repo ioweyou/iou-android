@@ -23,6 +23,11 @@ uploadArchives {
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
+    
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
 
     defaultConfig {
         minSdkVersion 15
