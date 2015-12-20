@@ -2,8 +2,7 @@ apply plugin: 'com.android.library'
 
 apply plugin: 'maven'
 
-version = "0.1-SNAPSHOT"
-group = "nl.brusque.iouandroid"
+
 
 configurations {
     deployerJars
@@ -14,6 +13,9 @@ uploadArchives {
         mavenDeployer {
             configuration = configurations.deployerJars
             repository(url: "scp://php53-dev.ad.infi.nl/home/ely/public_html/maven2")
+            pom.version    = "0.1-SNAPSHOT"
+            pom.artifactId = "iou-android"
+            pom.groupId    = "nl.brusque.iou"
         }
     }
 }
