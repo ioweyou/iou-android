@@ -42,4 +42,5 @@ dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ssh:2.9"
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'nl.brusque.iou:iou-core:0.1-SNAPSHOT'
+    androidTestCompile 'junit:junit:4.12'
 }

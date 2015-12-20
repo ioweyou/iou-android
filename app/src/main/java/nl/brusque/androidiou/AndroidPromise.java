@@ -22,11 +22,4 @@ public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidFulfi
     protected AndroidPromise create() {
         return new AndroidPromise(_context);
     }
-
-    @Override
-    public AbstractPromise<AndroidPromise, AndroidFulfillable, AndroidRejectable> resolve(final Object o) {
-        //get
-
-        return super.resolve(o);
-    }
 }
