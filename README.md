@@ -24,7 +24,7 @@ SOFTWARE.
 
 # IOU Android
 
-IOU Android is a Promise library for Android, which is built on [iou-android](https://git.brusque.nl/edeckers/iou-android) and adheres to the [A+ spec](https://github.com/promises-aplus/promises-spec) pretty closely, although it has a few 'convenience-methods' added. It supports execution scopes, which allow the client to decide whether to run code on the ui-thread or not.
+IOU Android is a Promise library for Android, which is built on [iou-core](https://git.brusque.nl/edeckers/iou-core) and adheres to the [A+ spec](https://github.com/promises-aplus/promises-spec) pretty closely, although it has a few 'convenience-methods' added. It supports execution scopes, which allow the client to decide whether to run code on the ui-thread or not.
 
 ## Maven
 -----
