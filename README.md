@@ -24,7 +24,7 @@ SOFTWARE.
 
 # IOU Android
 
-IOU Android is a Java Promise library built on [iou-android](https://git.brusque.nl/edeckers/iou-android) and adheres to the [A+ spec](https://github.com/promises-aplus/promises-spec) pretty closely, although it has a few 'conveniences' added.
+IOU Android is a Promise library for Android, which is built on [iou-android](https://git.brusque.nl/edeckers/iou-android) and adheres to the [A+ spec](https://github.com/promises-aplus/promises-spec) pretty closely, although it has a few 'convenience-methods' added. It supports execution scopes, which allow the client to decide whether to run code on the ui-thread or not.
 
 ## Maven
 -----
@@ -44,6 +44,9 @@ compile 'nl.brusque.iou:iou-android:${version}'
 
 Find available versions on [Maven Central Repository](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22nl.brusque.iou%22%20AND%20a%3A%22iou-android%22).
 
+## Execution scopes
+There are two execution scopes defined in AndroidPromise, `UI` and `BACKGROUND`, which make the executed code run on the UI-thread or a background-thread respectively. Each call to <promise>.`then` requires at least one `AndroidThenCallable`-parameter, which defines a method `getExecutionScope` that defines the scope the code should run in.
+
 ## Example
 -----
 Given in all examples:
@@ -57,12 +60,24 @@ AndroidPromise promise = iou.getPromise();
 promise
   .then(
     new AndroidThenCallable() {
-      public Object call(Object input) {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
         ...
       }
     },
     new AndroidThenCallable() {
-      public Object call(Object input) {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
         ...
       }
   });
@@ -77,13 +92,25 @@ This code is equivalent to the syntax from the ```Basic call```-section
 promise
   .then(
     new AndroidThenCallable() {
-      public Object call(Object input) {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
         ...
       }
     });
   .fail(
     new AndroidThenCallable() {
-      public Object call(Object input) {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
         ...
       }
   });
