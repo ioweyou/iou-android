@@ -155,14 +155,14 @@ This code is equivalent to the syntax from the ```Basic call```-section, but its
 ```java
 promise
   .when(
-    new AndroidThenScopedCallable<AndroidPromise.ExecutionScope.BACKGROUND>() {
+    new AndroidThenScopedCallable<ExecutionScope.BACKGROUND>() {
       @Override
       public Object call(Object input) throws Exception {
         ...
       }
     });
   .fail(
-    new AndroidThenScopedCallable<AndroidPromise.ExecutionScope.BACKGROUND>() {
+    new AndroidThenScopedCallable<ExecutionScope.BACKGROUND>() {
       @Override
       public Object call(Object input) throws Exception {
         ...
