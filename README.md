@@ -117,3 +117,34 @@ promise
 
 iou.resolve("resolve"); // or iou.reject("reject");
 ```
+
+## When-method call
+This code is equivalent to the syntax from the ```Basic call```-section, note the missing `iou.resolve`-call. The `when`-method essentially is the same as defining a promise and then immediately resolving it.
+
+```java
+promise
+  .when(
+    new AndroidThenCallable() {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
+        ...
+      }
+    });
+  .fail(
+    new AndroidThenCallable() {
+      @Override
+      public AndroidPromise.ExecutionScope getExecutionScope() {
+        return AndroidPromise.ExecutionScope.BACKGROUND;
+      }
+
+      @Override
+      public Object call(Object input) throws Exception {
+        ...
+      }
+  });
+```
