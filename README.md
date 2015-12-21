@@ -101,7 +101,7 @@ promise
       public Object call(Object input) throws Exception {
         ...
       }
-    });
+  })
   .fail(
     new AndroidThenCallable() {
       @Override
@@ -134,7 +134,7 @@ promise
       public Object call(Object input) throws Exception {
         ...
       }
-    });
+  })
   .fail(
     new AndroidThenCallable() {
       @Override
@@ -160,7 +160,7 @@ promise
       public Object call(Object input) throws Exception {
         ...
       }
-    });
+  })
   .fail(
     new AndroidThenScopedCallable<ExecutionScope.BACKGROUND>() {
       @Override
