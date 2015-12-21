@@ -86,7 +86,7 @@ iou.resolve("resolve"); // or iou.reject("reject");
 ```
 
 ## Fail-method call
-This code is equivalent to the syntax from the ```Basic call```-section
+This code is equivalent to the syntax from the ```Basic call```-section, but it might be considered more-readable
 
 ```java
 promise
