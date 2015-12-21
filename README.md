@@ -69,3 +69,24 @@ promise
 
 iou.resolve("resolve"); // or iou.reject("reject");
 ```
+
+## Fail-method call
+This code is equivalent to the syntax from the ```Basic call```-section
+
+```java
+promise
+  .then(
+    new AndroidThenCallable() {
+      public Object call(Object input) {
+        ...
+      }
+    });
+  .fail(
+    new AndroidThenCallable() {
+      public Object call(Object input) {
+        ...
+      }
+  });
+
+iou.resolve("resolve"); // or iou.reject("reject");
+```
