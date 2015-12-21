@@ -148,3 +148,24 @@ promise
       }
   });
 ```
+
+## Scope classes
+This code is equivalent to the syntax from the ```Basic call```-section, but its more consise, due to the use of scope-classes.
+
+```java
+promise
+  .when(
+    new AndroidThenBackgroundCallable() {
+      @Override
+      public Object call(Object input) throws Exception {
+        ...
+      }
+    });
+  .fail(
+    new AndroidThenBackgroundCallable() {
+      @Override
+      public Object call(Object input) throws Exception {
+        ...
+      }
+  });
+```
