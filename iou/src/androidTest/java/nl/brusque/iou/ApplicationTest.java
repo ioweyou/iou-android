@@ -1,6 +1,8 @@
 package nl.brusque.iou;
 
 import android.app.Application;
+import android.content.Context;
+import android.os.Looper;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
@@ -233,4 +235,111 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Assert.assertEquals("Rejected should never have been called", 0, _rejectableCount[0]);
     }
 
+    public void testRegularBackgroundScope() {
+        final boolean[] _isUIThread   = new boolean[1];
+
+        final Context c = ApplicationTest.this.getContext();
+
+        AndroidIOU iou = new AndroidIOU(c);
+        iou.when(1)
+            .then(new AndroidThenCallable() {
+                @Override
+                public AndroidPromise.ExecutionScope getExecutionScope() {
+                    return AndroidPromise.ExecutionScope.BACKGROUND;
+                }
+
+                @Override
+                public Object call(Object o) throws Exception {
+                    _isUIThread[0] = c.getMainLooper() == Looper.myLooper();
+
+                    return o;
+                }
+            });
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should not run on UI thread", false, _isUIThread[0]);
+    }
+
+    public void testRegularUIScope() {
+        final boolean[] _isUIThread   = new boolean[1];
+
+        final Context c = ApplicationTest.this.getContext();
+        AndroidIOU iou = new AndroidIOU(c);
+        iou.when(1)
+            .then(new AndroidThenCallable() {
+                @Override
+                public AndroidPromise.ExecutionScope getExecutionScope() {
+                    return AndroidPromise.ExecutionScope.UI;
+                }
+
+                @Override
+                public Object call(Object o) throws Exception {
+                    _isUIThread[0] = c.getMainLooper() == Looper.myLooper();
+
+                    return o;
+                }
+            });
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should run on UI thread", true, _isUIThread[0]);
+    }
+
+    public void testShortenedBackgroundScope() {
+        final boolean[] _isUIThread   = new boolean[1];
+
+        final Context c = ApplicationTest.this.getContext();
+        AndroidIOU iou = new AndroidIOU(c);
+        iou.when(1)
+            .then(new AndroidScopedThenCallable(AndroidPromise.ExecutionScope.BACKGROUND) {
+                @Override
+                public Object call(Object o) throws Exception {
+                    _isUIThread[0] = c.getMainLooper() == Looper.myLooper();
+
+                    return o;
+                }
+            });
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should not run on UI thread", false, _isUIThread[0]);
+    }
+
+    public void testShortenedUIScope() {
+        final boolean[] _isUIThread   = new boolean[1];
+
+        final Context c = ApplicationTest.this.getContext();
+
+        AndroidIOU iou = new AndroidIOU(c);
+        iou.when(1)
+            .then(new AndroidScopedThenCallable(AndroidPromise.ExecutionScope.UI) {
+                @Override
+                public Object call(Object o) throws Exception {
+                    _isUIThread[0] = c.getMainLooper() == Looper.myLooper();
+
+                    return o;
+                }
+            });
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should run on UI thread", true, _isUIThread[0]);
+    }
 }

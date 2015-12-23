@@ -21,9 +21,9 @@ public class AndroidThenCaller extends DefaultThenCallable<AndroidThenCallable> 
             @Override
             public void run() {
                 try {
-                    result[0] = AndroidThenCaller.super.call(fulfillable, o);
-
                     synchronized (this) {
+                        result[0] = AndroidThenCaller.super.call(fulfillable, o);
+
                         this.notify();
                     }
                 } catch (Exception e) {
