@@ -22,4 +22,8 @@ public class AndroidIOU extends AbstractIOU<AndroidPromise, AndroidThenCallable,
         return (AndroidPromise)super.reject(o);
     }
 
+    public AndroidPromise when(Object o) {
+        return resolve(o);
+    }
+
 }

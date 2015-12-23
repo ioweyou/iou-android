@@ -187,4 +187,50 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Assert.assertEquals("Rejected should have been called exactly once", 1, _rejectableCount[0]);
     }
 
+    public void testWhenResolvesPromiseWithGivenValueImmediately() {
+        final int[] _fulfillableCount   = new int[1];
+        final int[] _rejectableCount    = new int[1];
+        final Object[] _fulfillableResult = new Object[1];
+
+        AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
+        iou.when(1)
+            .then(new AndroidThenCallable() {
+                @Override
+                public AndroidPromise.ExecutionScope getExecutionScope() {
+                    return AndroidPromise.ExecutionScope.BACKGROUND;
+                }
+
+                @Override
+                public Object call(Object o) throws Exception {
+                    _fulfillableCount[0]++;
+                    _fulfillableResult[0] = o;
+
+                    return o;
+                }
+            })
+            .fail(new AndroidThenCallable() {
+                @Override
+                public AndroidPromise.ExecutionScope getExecutionScope() {
+                    return AndroidPromise.ExecutionScope.BACKGROUND;
+                }
+
+                @Override
+                public Object call(Object o) throws Exception {
+                    _rejectableCount[0]++;
+
+                    return o;
+                }
+            });
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should have been called exactly once", 1, _fulfillableCount[0]);
+        Assert.assertEquals("Fulfilled should have been called with value '1'", 1, _fulfillableResult[0]);
+        Assert.assertEquals("Rejected should never have been called", 0, _rejectableCount[0]);
+    }
+
 }
