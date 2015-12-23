@@ -15,7 +15,10 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Assert.assertEquals(true, true);
     }
 
-    public void testTestOne() {
+    public void testRegularResolve() {
+        final int[] _fulfillableCount = new int[1];
+        final int[] _rejectableCount  = new int[1];
+
         AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
         iou.getPromise().then(new AndroidThenCallable() {
             @Override
@@ -25,7 +28,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
             @Override
             public Object call(Object o) throws Exception {
-                Log.i("JUST", "TEST");
+                _fulfillableCount[0]++;
 
                 return o;
             }
@@ -37,17 +40,151 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
             @Override
             public Object call(Object o) throws Exception {
-                Log.i("JUST", "REJECT");
+                _rejectableCount[0]++;
+
                 return o;
             }
         });
 
-        iou.resolve(1);
+        iou.resolve("resolve");
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Assert.assertEquals("Fulfilled should have been called exactly once", 1, _fulfillableCount[0]);
+        Assert.assertEquals("Rejected should never have been called", 0, _rejectableCount[0]);
     }
+
+    public void testRegularReject() {
+        final int[] _fulfillableCount = new int[1];
+        final int[] _rejectableCount  = new int[1];
+
+        AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
+        iou.getPromise().then(new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _fulfillableCount[0]++;
+
+                return o;
+            }
+        }, new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _rejectableCount[0]++;
+
+                return o;
+            }
+        });
+
+        iou.reject("reject");
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Rejected should have been called exactly once", 1, _rejectableCount[0]);
+        Assert.assertEquals("Fulfilled should never have been called", 0, _fulfillableCount[0]);
+    }
+
+    public void testResolveWithFailMethod() {
+        final int[] _fulfillableCount = new int[1];
+        final int[] _rejectableCount  = new int[1];
+
+        AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
+        iou.getPromise().then(new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _fulfillableCount[0]++;
+
+                return o;
+            }
+        }).fail(new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _rejectableCount[0]++;
+
+                return o;
+            }
+        });
+
+        iou.resolve("resolve");
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should have been called exactly once", 1, _fulfillableCount[0]);
+        Assert.assertEquals("Rejected should never have been called", 0, _rejectableCount[0]);
+    }
+
+    public void testRejectWithFailMethod() {
+        final int[] _fulfillableCount = new int[1];
+        final int[] _rejectableCount  = new int[1];
+
+        AndroidIOU iou = new AndroidIOU(ApplicationTest.this.getContext());
+        iou.getPromise().then(new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _fulfillableCount[0]++;
+
+                return o;
+            }
+        }).fail(new AndroidThenCallable() {
+            @Override
+            public AndroidPromise.ExecutionScope getExecutionScope() {
+                return AndroidPromise.ExecutionScope.BACKGROUND;
+            }
+
+            @Override
+            public Object call(Object o) throws Exception {
+                _rejectableCount[0]++;
+
+                return o;
+            }
+        });
+
+        iou.reject("reject");
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertEquals("Fulfilled should never have been called", 0, _fulfillableCount[0]);
+        Assert.assertEquals("Rejected should have been called exactly once", 1, _rejectableCount[0]);
+    }
+
 }

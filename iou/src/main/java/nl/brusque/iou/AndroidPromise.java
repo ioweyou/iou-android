@@ -20,4 +20,23 @@ public class AndroidPromise extends AbstractPromise<AndroidPromise, AndroidThenC
     protected AndroidPromise create() {
         return new AndroidPromise(_context);
     }
+
+    @Override
+    public AndroidPromise then() {
+        return then(null, null);
+    }
+
+    @Override
+    public AndroidPromise then(Object onFulfilled) {
+        return then(onFulfilled, null);
+    }
+
+    @Override
+    public AndroidPromise then(Object onFulfilled, Object onRejected) {
+        return (AndroidPromise)super.then(onFulfilled, onRejected);
+    }
+
+    public AndroidPromise fail(Object onRejected) {
+        return then(null, onRejected);
+    }
 }
