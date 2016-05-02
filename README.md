@@ -105,6 +105,23 @@ iou.getPromise()
 
 iou.resolve(42); // prints "42"
 ```
+Or using `when` (note: this notation works for all examples, but I only demonstrate it here)
+```java
+  IOUAndroid<Integer> iou = new IOUAndroid<>(getActivity());
+
+  iou.when(42)
+      .then(new AndroidThenCallable<Integer, Void>() {
+              public AndroidPromise.ExecutionScope getExecutionScope() {
+                  return AndroidPromise.ExecutionScope.BACKGROUND;
+              }
+
+              @Override
+              public Void apply(Integer input) throws Exception {
+                  Log.i(TAG, input.toString());
+                  return null;
+              }
+          }); // prints "42"
+```
 ### Chained or piped promise
 ```java
 IOUAndroid<Integer> iou = new IOUAndroid<>(getActivity());

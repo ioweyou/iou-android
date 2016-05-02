@@ -34,7 +34,6 @@ public class Examples extends ActivityInstrumentationTestCase2<TestMainActivity>
         allowTestToFinish();
     }
 
-
     public void testCallWithSingleThenVerbose() {
         IOUAndroid<Integer> iou = new IOUAndroid<>(getActivity());
 
@@ -52,6 +51,25 @@ public class Examples extends ActivityInstrumentationTestCase2<TestMainActivity>
                 });
 
         iou.resolve(42); // prints "42"
+
+        allowTestToFinish();
+    }
+
+    public void testCallWithWhen() {
+        IOUAndroid<Integer> iou = new IOUAndroid<>(getActivity());
+
+        iou.when(42)
+            .then(new AndroidThenCallable<Integer, Void>() {
+                    public AndroidPromise.ExecutionScope getExecutionScope() {
+                        return AndroidPromise.ExecutionScope.BACKGROUND;
+                    }
+
+                    @Override
+                    public Void apply(Integer input) throws Exception {
+                        Log.i(TAG, input.toString());
+                        return null;
+                    }
+                }); // prints "42"
 
         allowTestToFinish();
     }
