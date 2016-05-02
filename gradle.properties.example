@@ -1,7 +1,7 @@
 POM_NAME=IOU Android
 POM_ARTIFACT_ID=iou-android
 POM_PACKAGING=aar
-VERSION_NAME=1.0.0-beta-01
+VERSION_NAME=1.0.0-beta-02
 VERSION_CODE=1
 GROUP=nl.brusque.iou
 

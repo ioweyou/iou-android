@@ -32,14 +32,14 @@ IOU Android is a promise-library that is based on [IOU Core](https://github.com/
 <dependency>
     <groupId>nl.brusque.iou</groupId>
     <artifactId>iou-android</artifactId>
-    <version>1.0.0-beta-01</version>
+    <version>1.0.0-beta-02</version>
 </dependency>
 ```
 
 ## Gradle
 -----
 ```
-compile 'nl.brusque.iou:iou-android:1.0.0-beta-01@aar' { transitive = true }
+compile 'nl.brusque.iou:iou-android:1.0.0-beta-02@aar' { transitive = true }
 ```
 
 ## Example
