@@ -25,6 +25,12 @@ public class AndroidPromise<TFulfill> extends AbstractPromise<TFulfill> {
         return super.then(null, failureCallable);
     }
 
+    public <TAnythingOutput> IThenable<TAnythingOutput> fail(ExecutionScope executionScope, IThenCallable<Object, TAnythingOutput> failureCallable) {
+        ((AndroidThenCallable)failureCallable).setExecutionScope(executionScope);
+
+        return super.then(null, failureCallable);
+    }
+
     @Override
     public <TAnythingOutput> AndroidPromise<TAnythingOutput> then(IThenCallable<TFulfill, TAnythingOutput> onFulfilled) {
         return (AndroidPromise<TAnythingOutput>)super.then(onFulfilled);
@@ -36,5 +42,13 @@ public class AndroidPromise<TFulfill> extends AbstractPromise<TFulfill> {
             IThenCallable<Object, TAnythingOutput> onRejected) {
 
         return (AndroidPromise<TAnythingOutput>)super.then(onFulfilled, onRejected);
+    }
+
+    public <TAnythingOutput> AndroidPromise<TAnythingOutput> then(
+            ExecutionScope executionScope,
+            IThenCallable<TFulfill, TAnythingOutput> onFulfilled) {
+        ((AndroidThenCallable)onFulfilled).setExecutionScope(executionScope);
+
+        return (AndroidPromise<TAnythingOutput>)super.then(onFulfilled);
     }
 }

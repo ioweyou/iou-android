@@ -3,6 +3,7 @@ package nl.brusque.iou_android_samples;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import nl.brusque.iou.AndroidPromise;
 import nl.brusque.iou.AndroidThenCallable;
@@ -23,12 +24,19 @@ public class JavaActivity extends AppCompatActivity {
             public String apply(String url) throws Exception {
                 return new HttpClient().get(url);
             }
-        }).then(new AndroidThenCallable<String, Void>(AndroidPromise.ExecutionScope.UI) {
+        }).then(new AndroidThenCallable<String, String>(AndroidPromise.ExecutionScope.BACKGROUND) {
             @Override
-            public Void apply(String response) throws Exception {
+            public String apply(String response) throws Exception {
                 Log.i(TAG, response);
 
-                return null;
+                return response;
+            }
+        }).then(new AndroidThenCallable<String, String>(AndroidPromise.ExecutionScope.UI) {
+            @Override
+            public String apply(String response) throws Exception {
+                Toast.makeText(JavaActivity.this, response, Toast.LENGTH_SHORT).show();
+
+                return response;
             }
         }).fail(new AndroidThenCallable<Object, Object>() {
             @Override
