@@ -11,12 +11,13 @@ public abstract class AndroidThenCallable<T, R> implements IThenCallable<T, R>, 
         _scope = scope;
     }
 
-    public void setExecutionScope(AndroidPromise.ExecutionScope scope) {
-        _scope = scope;
-    }
-
     @Override
     public AndroidPromise.ExecutionScope getExecutionScope() {
         return _scope;
+    }
+
+    @Override
+    public void setExecutionScope(AndroidPromise.ExecutionScope scope) {
+        _scope = scope;
     }
 }
