@@ -27,7 +27,11 @@ SOFTWARE.
 [![Travis CI](https://travis-ci.org/ioweyou/iou-android.svg)](https://travis-ci.org/ioweyou/iou-android)
 [![License MIT](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
-IOU Android is a promise-library that is based on [IOU Core](https://github.com/ioweyou/iou-core) and aside from some extensions (e.g. `IOUAndroid.when` and `AndroidPromise.fail`) adheres to the [A+ spec](https://github.com/promises-aplus/promises-spec) as closely as possible.
+<a href="https://promisesaplus.com/">
+    <img src="https://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo"
+         title="Promises/A+ 1.0 compliant" align="right" />
+</a>
+IOU Android is a [Promises/A+](https://github.com/promises-aplus/promises-spec) compliant promise library that extends [IOU Core](https://github.com/ioweyou/iou-core).
 
 ## Maven
 -----
