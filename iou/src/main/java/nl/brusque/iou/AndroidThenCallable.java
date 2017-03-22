@@ -1,7 +1,7 @@
 package nl.brusque.iou;
 
 public abstract class AndroidThenCallable<T, R> implements IThenCallable<T, R>, IAndroidScopable {
-    private final AndroidPromise.ExecutionScope _scope;
+    private AndroidPromise.ExecutionScope _scope;
 
     public AndroidThenCallable() {
         this(AndroidPromise.ExecutionScope.BACKGROUND);
@@ -14,5 +14,10 @@ public abstract class AndroidThenCallable<T, R> implements IThenCallable<T, R>, 
     @Override
     public AndroidPromise.ExecutionScope getExecutionScope() {
         return _scope;
+    }
+
+    @Override
+    public void setExecutionScope(AndroidPromise.ExecutionScope scope) {
+        _scope = scope;
     }
 }
